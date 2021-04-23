@@ -46,15 +46,15 @@ class Command:
             model_param = json.load(f)
 
         # Building the pipeline
-        audio_params = rts.listenner.AudioParams(**model_param['audio'])
-        features_params = rts.features.MFCCParams(**model_param['audio'], **model_param['features'])
+        audio_params = rts.listenner.AudioParams(**model_param['acoustic'])
+        features_params = rts.features.MFCCParams(**model_param['acoustic'], **model_param['feature'])
 
         listenner = rts.listenner.Listenner(audio_params)
         self._vad = rts.vad.VADer(mode=int(self.config['MODE']), tail=int(self.config['TAIL']), head=int(self.config['HEAD']))
         btn = rts.transform.ByteToNum(normalize=True)
         
-        if 'emphasis' in model_param['audio'] and model_param['audio']['emphasis'] is not None:
-            emp = rts.transform.PreEmphasis(emphasis_factor = model_param['audio']['emphasis'])
+        if 'use_emphasis' in model_param['acoustic'] and model_param['acoustic']['use_emphasis']:
+            emp = rts.transform.PreEmphasis(emphasis_factor = model_param['acoustic']['emphasis_factor'])
         else: 
             emp = None
         mfcc = rts.features.SonopyMFCC(features_params)
